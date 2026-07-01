@@ -7,6 +7,8 @@ auto-grade your picks against real results from The Blue Alliance.
 
 Built with **React + Vite**.
 
+**🌐 Live site: https://gilsamedia.github.io/QualGambl/**
+
 ## Files
 
 | Path | Purpose |
@@ -70,17 +72,30 @@ npm run dev
 # open the printed URL (http://localhost:5173)
 ```
 
-## Deploy (Firebase Hosting)
+## Deploy
+
+The site auto-deploys to **GitHub Pages** on every push to `main` via
+[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) — it runs
+`npm ci && npm run build` and publishes `dist/`. Nothing to run manually; just:
+
+```bash
+git push origin main   # → builds and deploys to https://gilsamedia.github.io/QualGambl/
+```
+
+> **Google sign-in on the live site:** add `gilsamedia.github.io` under
+> **Firebase console → Authentication → Settings → Authorized domains**.
+> (Not needed for local dev — `localhost` is authorized by default.)
+
+<details><summary>Alternative: Firebase Hosting</summary>
 
 ```bash
 npm run build                # outputs to dist/
-npm install -g firebase-tools
-firebase login
+firebase login               # must be an account with access to the project
 firebase init hosting        # public dir: dist ; single-page app: Yes
 firebase deploy
 ```
-
-Then add your `*.web.app` domain under **Authentication → Authorized domains**.
+The `*.web.app` domain is auto-authorized for Firebase Auth.
+</details>
 
 ## How it works
 
