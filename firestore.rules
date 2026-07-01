@@ -1,0 +1,39 @@
+rules_version = '2';
+
+// QualGambl Firestore rules
+// A signed-in user may read/write ONLY their own profile and predictions.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // events/{eventKey} — admin-managed event codes (add via Firebase console only)
+    match /events/{eventKey} {
+      allow read: if request.auth != null;
+      allow write: if false;
+
+      // events/{eventKey}/results/{qual} — posted when a qual ends (from TBA)
+      match /results/{qual} {
+        allow read: if request.auth != null;
+        allow create, update: if request.auth != null
+          && request.resource.data.actual in ['red', 'blue', 'tie'];
+        allow delete: if false;
+      }
+
+      // events/{eventKey}/live/state — bumped on predictions / results (realtime refresh)
+      match /live/{docId} {
+        allow read: if request.auth != null;
+        allow create, update: if request.auth != null;
+        allow delete: if false;
+      }
+    }
+
+    // users/{uid} — profile (displayName, email, teamNumber, timestamps)
+    match /users/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+
+      // users/{uid}/predictions/{eventKey} — one doc per event
+      match /predictions/{eventKey} {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
+      }
+    }
+  }
+}
